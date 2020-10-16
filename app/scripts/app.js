@@ -35,6 +35,12 @@ proper order even if all the requests haven't finished.
     console.log('renderd:'+data.pl_name);
     resolve();
     });
+    // var pT = document.createElement('planet-thumb');
+    // for (var d in data) {
+    //   pT[d] = data[d];
+    // }
+    // home.appendChild(pT);
+    // console.log('renderd:'+data.pl_name);
   }
 
   /**
@@ -80,14 +86,22 @@ proper order even if all the requests haven't finished.
       return response;
     }).then(function(response){
       var sequence=Promise.resolve();
+      // .map executes all of the network requests immediately.
       var arrayOfExecutingPromises =response.results.map(function(url){
         return getJSON(url);
       });
 
       arrayOfExecutingPromises.forEach(function(request){
+        // Loop through the pending requests that were returned by .map (and are in order) and
+      // turn them into a sequence.
+      // request is a getJSON() that's currently executing.
         sequence=sequence.then(function(){
+          // Remember that createPlanetThumb is a Promise, so it must resolve before Promises
+        // later in the sequence can execute.
           return request.then(createPlanetThumb)
         });
+        //don't wait for pending request and dont block  any thumblin creation 
+        //request.then(createPlanetThumb);
       });
     })
   });
